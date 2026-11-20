@@ -1,0 +1,18 @@
+{
+  "merchant_revenue_summary": {
+    "description": "Calculates total successful revenue and transaction count grouped by merchant name and city.",
+    "sql": "\n                SELECT m.merchant_name, m.city, COUNT(DISTINCT t.txn_id) AS total_txns, ROUND(SUM(t.amount), 2) AS total_revenue\n                FROM upi_transactions t\n                JOIN merchants m ON t.merchant_id = m.merchant_id\n                WHERE UPPER(t.txn_status) IN ('SUCCESS', 'COMPLETED', 'DONE') AND t.amount > 0\n                GROUP BY m.merchant_name, m.city\n                ORDER BY total_revenue DESC;\n            "
+  },
+  "bank_failure_breakdown": {
+    "description": "Shows failed transaction count and failure error codes grouped by bank.",
+    "sql": "\n                SELECT UPPER(bank_name) AS bank, error_code, COUNT(DISTINCT txn_id) AS failed_count\n                FROM upi_transactions\n                WHERE UPPER(txn_status) IN ('FAILED', 'FAIL')\n                GROUP BY UPPER(bank_name), error_code\n                ORDER BY failed_count DESC;\n            "
+  },
+  "category_wise_volume": {
+    "description": "Shows total transaction volume across different merchant categories (Grocery, Electronics, Travel, etc.).",
+    "sql": "\n                SELECT m.category, COUNT(DISTINCT t.txn_id) AS txn_count, ROUND(SUM(t.amount), 2) AS volume\n                FROM upi_transactions t\n                JOIN merchants m ON t.merchant_id = m.merchant_id\n                WHERE t.amount > 0\n                GROUP BY m.category\n                ORDER BY volume DESC;\n            "
+  },
+  "city_wise_performance": {
+    "description": "Compares total transactions and total successful revenue across cities.",
+    "sql": "\n                SELECT m.city, COUNT(DISTINCT t.txn_id) AS total_txns, ROUND(SUM(t.amount), 2) AS total_revenue\n                FROM upi_transactions t\n                JOIN merchants m ON t.merchant_id = m.merchant_id\n                WHERE UPPER(t.txn_status) IN ('SUCCESS', 'COMPLETED', 'DONE') AND t.amount > 0\n                GROUP BY m.city\n                ORDER BY total_revenue DESC;\n            "
+  }
+}
